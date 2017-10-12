@@ -8,8 +8,13 @@
   },
   "author": "Nora Peters",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "pump": "^1.0.2"
+  },
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "browser-sync": "^2.18.13",
+    "gulp": "^3.9.1",
+    "gulp-uglify": "^3.0.0",
+    "uglify-es": "^3.1.3"
   }
 }
