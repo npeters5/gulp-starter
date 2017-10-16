@@ -1,7 +1,3 @@
-function hello() {
-  console.log("Hello");
-}
-
-//let hello = () => console.log("Hello");
+const hello = () => console.log('Hello');
 
 hello();

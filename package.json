@@ -6,15 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Nora Peters",
+  "author": "",
   "license": "ISC",
-  "dependencies": {
-    "pump": "^1.0.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "browser-sync": "^2.18.13",
     "gulp": "^3.9.1",
     "gulp-uglify": "^3.0.0",
+    "pump": "^1.0.2",
     "uglify-es": "^3.1.3"
   }
 }

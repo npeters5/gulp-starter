@@ -1,1 +1,1 @@
-function hello(){console.log("Hello")}hello();
+const hello=()=>console.log("Hello");console.log("Hello");
