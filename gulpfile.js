@@ -1,59 +1,81 @@
-const gulp = require('gulp');
-const pump = require('pump');
+const gulp = require("gulp");
+const pump = require("pump");
 
-const composer = require('gulp-uglify/composer');
-const uglifyjs = require('uglify-es');
+const composer = require("gulp-uglify/composer");
+const uglifyjs = require("uglify-es");
 const uglify = composer(uglifyjs, console);
+const cssnano = require("gulp-cssnano");
+const imagemin = require("gulp-imagemin");
+const del = require("del");
 
-const browserSync = require('browser-sync').create();
+const useref = require("gulp-useref");
+const gulpIf = require("gulp-if");
+const browserSync = require("browser-sync").create();
+const sass = require("gulp-sass");
 
-gulp.task('hello', function() {
-  console.log('Hello everyone!');
-});
-
-// More typical gulp task
-gulp.task('task-name', function() {
+gulp.task("sass", function() {
   return gulp
-    .src('source/files')
-    .pipe(gulpPlugin())
-    .pipe(gulp.dest('destination/folder'));
+    .src("src/scss/style.scss")
+    .pipe(sass())
+    .pipe(gulp.dest("src/css"))
+    .pipe(
+      browserSync.reload({
+        stream: true
+      })
+    );
 });
 
-// Globs
-
-// *.js
-// * is a wildcard that matches any pattern in the current directory
-
-// **/*.js
-// **/ is a wildcard that matches directories, in this case
-// this will match any js files from the root directory and down
-
-// !not-this-file.js
-// ! tells gulp to exclude that pattern from matched files
-
-// *.+(js|ts)
-// The plus + and parentheses () allow gulp to match multiple patterns
-// with different ones separated by the pipe | character. In this
-// example, gulp matches any file neding with .js or .ts in the root folder.
-
-// Compress our JS using gulp-uglify and uglify-es (and pump)
-gulp.task('compress', function(cb) {
-  pump([gulp.src('src/js/*.js'), uglify(), gulp.dest('dist/js')], cb);
+gulp.task("useref", function() {
+  return gulp
+    .src("src/index.html")
+    .pipe(useref())
+    .pipe(gulpIf("*.js", uglify()))
+    .pipe(gulpIf("*.css", cssnano()))
+    .pipe(gulp.dest("dist"));
 });
 
-// Watch files, run tasks, put inside a task
-gulp.watch('files/to/watch', ['tasks', 'to', 'run']);
+gulp.task("images", function() {
+  return gulp
+    .src("src/img/**/*.+(png|jpg|gif|svg)")
+    .pipe(imagemin())
+    .pipe(gulp.dest("dist/img"));
+});
 
-gulp.task('watch', ['browserSync'], function() {
-  gulp.watch('src/*.html', browserSync.reload);
-  gulp.watch('src/js/*.js', browserSync.reload);
+gulp.task("fonts", function() {
+  return gulp.src("src/fonts/**").pipe(gulp.dest("dist/fonts"));
+});
+
+gulp.task("clean:dist", function() {
+  return del.sync("dist");
+});
+
+gulp.task("watch", ["browserSync", "sass"], function() {
+  gulp.watch("src/scss/style.scss", ["sass"]);
+  gulp.watch("src/*.html", browserSync.reload);
+  gulp.watch("src/js/*.js", browserSync.reload);
+});
+
+gulp.task("watch:sass", ["sass"], function() {
+  gulp.watch("src/scss/style.scss", ["sass"]);
 });
 
 // BrowserSync!!!!!!!!
-gulp.task('browserSync', function() {
+gulp.task("browserSync", function() {
   browserSync.init({
     server: {
-      baseDir: 'src'
+      baseDir: "src"
     }
   });
+});
+
+gulp.task(
+  "build",
+  ["clean:dist", "fonts", "images", "sass", "useref"],
+  function() {
+    console.log("Website ready for deployment");
+  }
+);
+
+gulp.task("serve", ["watch"], function() {
+  console.log("Server running!");
 });
